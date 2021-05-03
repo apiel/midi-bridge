@@ -6,8 +6,8 @@
 #include "io_controller.h"
 #include "io_display.h"
 #include "io_midi_core.h"
-#include "io_midi_util.h"
 #include "io_midi_serial.h"
+#include "io_midi_util.h"
 
 void noteOnHandler(byte channel, byte note, byte velocity) {
     Serial.print("Note On, ch=");
@@ -53,6 +53,8 @@ void controlChangeHandler(byte channel, byte control, byte value) {
     // if channel == 1
     if (control == 16) {
         setCurrentChannel(value);
+    } else {
+        controllerCC(control, value);
     }
 
     displayUpdate();
@@ -67,6 +69,17 @@ void afterTouchPolyHandler(uint8_t channel, uint8_t note, uint8_t pressure) {
     Serial.println(pressure, DEC);
 }
 
+void programChangeHandler(uint8_t channel, uint8_t program) {
+    Serial.print("Program Change, ch=");
+    Serial.print(channel, DEC);
+    Serial.print(", program=");
+    Serial.println(program, DEC);
+
+    controllerProgramChange(program);
+
+    displayUpdate();
+}
+
 void sysExHandler(const uint8_t* data, uint16_t length, bool complete) {
     Serial.println("some sysExHandler data");
 }
@@ -78,6 +91,7 @@ void midiInit() {
         midiUsb[n].setHandleNoteOn(noteOnHandler);
         midiUsb[n].setHandleNoteOff(noteOffHandler);
         midiUsb[n].setHandleControlChange(controlChangeHandler);
+        midiUsb[n].setHandleProgramChange(programChangeHandler);
         midiUsb[n].setHandleAfterTouchPoly(afterTouchPolyHandler);
         midiUsb[n].setHandleSysEx(sysExHandler);
 

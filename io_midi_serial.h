@@ -17,4 +17,8 @@ void midiSerialNoteOff(byte note, byte velocity, byte channel) {
     MIDI.sendNoteOff(note, velocity, channel);
 }
 
+void midiSerialCC(byte controlNumber, byte value, byte channel) {
+    MIDI.sendControlChange(controlNumber, value, channel);
+}
+
 #endif
