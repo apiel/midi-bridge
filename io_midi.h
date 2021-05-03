@@ -18,7 +18,6 @@ void noteOnHandler(byte channel, byte note, byte velocity) {
     Serial.println(velocity, DEC);
 
     controllerNoteOn(note, velocity);
-
     displayUpdate();
 }
 
@@ -31,7 +30,6 @@ void noteOffHandler(byte channel, byte note, byte velocity) {
     Serial.println(velocity, DEC);
 
     controllerNoteOff(note, velocity);
-
     displayUpdate();
 }
 
@@ -50,13 +48,17 @@ void controlChangeHandler(byte channel, byte control, byte value) {
     Serial.print(", value=");
     Serial.println(value, DEC);
 
-    // if channel == 1
-    if (control == 16) {
-        setCurrentChannel(value);
-    } else {
-        controllerCC(control, value);
-    }
+    controllerCC(control, value);
+    displayUpdate();
+}
 
+void programChangeHandler(uint8_t channel, uint8_t program) {
+    Serial.print("Program Change, ch=");
+    Serial.print(channel, DEC);
+    Serial.print(", program=");
+    Serial.println(program, DEC);
+
+    controllerProgramChange(program);
     displayUpdate();
 }
 
@@ -67,17 +69,6 @@ void afterTouchPolyHandler(uint8_t channel, uint8_t note, uint8_t pressure) {
     Serial.print(note, DEC);
     Serial.print(", pressure=");
     Serial.println(pressure, DEC);
-}
-
-void programChangeHandler(uint8_t channel, uint8_t program) {
-    Serial.print("Program Change, ch=");
-    Serial.print(channel, DEC);
-    Serial.print(", program=");
-    Serial.println(program, DEC);
-
-    controllerProgramChange(program);
-
-    displayUpdate();
 }
 
 void sysExHandler(const uint8_t* data, uint16_t length, bool complete) {

@@ -33,6 +33,8 @@ void controllerCC(byte control, byte value) {
         controllers[control].setControl(value);
     } else if (current_view == VIEW_EDIT_CHANNEL) {
         controllers[control].setChannel(value);
+    } else if (controllers[control].control == 0) {
+        setCurrentChannel(value);
     } else {
         midiSerialCC(controllers[control].control, value,
                      controllers[control].channel);

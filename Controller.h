@@ -18,7 +18,9 @@ Controls controls[] = {
     {86, "Mod. Speed"},
 };
 
-#define CONTROL_COUNT sizeof controls / sizeof controls[0]
+// #define CONTROL_COUNT sizeof controls / sizeof controls[0]
+#define CONTROL_COUNT 13
+#define CONTROL_DIVIDER (int)(127 / (CONTROL_COUNT - 1))
 
 class Controller {
    public:
@@ -29,7 +31,9 @@ class Controller {
 
     void setChannel(byte value) { channel = (int)(value / 8) + 1; }
     void setControl(byte value) {
-        controlSel = (int)(value / (127 / CONTROL_COUNT));
+        controlSel = (int)(value / CONTROL_DIVIDER);
+        Serial.printf("Set control stuff %d of %d\n", controlSel,
+                      CONTROL_COUNT);
         control = controls[controlSel].control;
         controlName = controls[controlSel].name;
     }
