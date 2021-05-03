@@ -36,6 +36,7 @@ void controllerCC(byte control, byte value) {
     } else if (controllers[control].control == 0) {
         setCurrentChannel(value);
     } else {
+        controllers[control].value = value;
         midiSerialCC(controllers[control].control, value,
                      controllers[control].channel);
     }

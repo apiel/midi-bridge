@@ -27,6 +27,7 @@ class Controller {
     byte channel = 1;
     byte controlSel = 0;
     byte control = controls[0].control;
+    byte value = 0;
     const char* controlName = controls[0].name;
 
     void setChannel(byte value) { channel = (int)(value / 8) + 1; }

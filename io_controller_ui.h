@@ -10,6 +10,17 @@ void displayMainView(Adafruit_SSD1306* d) {
     d->setTextSize(4);
     d->printf("ch.%d\n", current_channel);
     d->setTextSize(1);
+
+    if (controllers[last_control].control) {
+        d->setCursor(0, 40);
+        d->setTextSize(2);
+        d->print(controllers[last_control].value);
+        d->setTextSize(1);
+        d->setCursor(40, 40);
+        d->printf("ch.%d", controllers[last_control].channel);
+        d->setCursor(40, 48);
+        d->print(controllers[last_control].controlName);
+    }
 }
 
 void displayEdit(Adafruit_SSD1306* d) {
