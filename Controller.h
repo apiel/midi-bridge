@@ -32,8 +32,6 @@ class Controller {
     void setChannel(byte value) { channel = (int)(value / 8) + 1; }
     void setControl(byte value) {
         controlSel = (int)(value / CONTROL_DIVIDER);
-        Serial.printf("Set control stuff %d of %d\n", controlSel,
-                      CONTROL_COUNT);
         control = controls[controlSel].control;
         controlName = controls[controlSel].name;
     }
