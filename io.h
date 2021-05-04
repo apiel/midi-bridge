@@ -5,6 +5,7 @@
 
 #include "io_display.h"
 #include "io_midi.h"
+#include "io_storage.h"
 
 void ioInit() {
     // // to comment out
@@ -13,6 +14,7 @@ void ioInit() {
 
     Serial.println("Init controller");
     displayInit();
+    storageInit();
 
     midiInit();
     displayUpdate();
