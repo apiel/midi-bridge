@@ -10,6 +10,7 @@
 
 enum { VIEW_MAIN, VIEW_EDIT_CONTROLLER, VIEW_EDIT_CHANNEL, VIEW_COUNT };
 
+byte current_pattern = 0;
 byte current_view = VIEW_MAIN;
 byte current_channel = 1;
 byte last_control = 0;
@@ -34,8 +35,11 @@ void controllerCC(byte control, byte value) {
     } else if (current_view == VIEW_EDIT_CHANNEL) {
         controllers[control].setChannel(value);
         saveControllerProject(current_project);
-    } else if (controllers[control].control == 0) {
+    } else if (controllers[control].control == CTRL_SEL_CHANNEL) {
         setCurrentChannel(value);
+    } else if (controllers[control].control == CTRL_SEL_PATTERN) {
+        midiSerialProgramChange(value, controllers[control].channel);
+        current_pattern = value;
     } else {
         controllers[control].value = value;
         midiSerialCC(controllers[control].control, value,
@@ -49,6 +53,9 @@ void controllerCC(byte control, byte value) {
 void controllerProgramChange(byte program) {
     if (program == 7) {
         current_view = mod(current_view + 1, VIEW_COUNT);
+    } else if (program == 6) {
+        current_pattern++;
+        midiSerialProgramChange(current_pattern, 1);
     } else if (program < CONTROLLER_PROJECT_COUNT) {
         current_project = program;
         loadControllerProject(program);

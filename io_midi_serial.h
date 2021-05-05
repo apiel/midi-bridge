@@ -21,4 +21,8 @@ void midiSerialCC(byte controlNumber, byte value, byte channel) {
     MIDI.sendControlChange(controlNumber, value, channel);
 }
 
+void midiSerialProgramChange(byte value, byte channel) {
+    MIDI.sendProgramChange(value, channel);
+}
+
 #endif
