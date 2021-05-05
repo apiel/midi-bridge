@@ -7,7 +7,7 @@
 
 typedef struct {
     byte control;
-    const char* name;
+    char* name;
 } Controls;
 
 Controls controls[] = {
@@ -28,7 +28,22 @@ class Controller {
     byte controlSel = 0;
     byte control = controls[0].control;
     byte value = 0;
-    const char* controlName = controls[0].name;
+    char* controlName = controls[0].name;
+
+    void set(byte _control, byte _channel) {
+        control = _control;
+        channel = _channel;
+        assignName();
+    }
+
+    void assignName() {
+        for (byte n; n < CONTROL_COUNT; n++) {
+            if (control == controls[n].control) {
+                controlName = controls[n].name;
+                return;
+            }
+        }
+    }
 
     void setChannel(byte value) { channel = (int)(value / 8) + 1; }
     void setControl(byte value) {

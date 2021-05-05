@@ -10,7 +10,8 @@
 // number of encoder/pot available --> should it be renamed?
 #define CONTROLLER_COUNT 127
 
-Controller controllers[CONTROLLER_PROJECT_COUNT][CONTROLLER_COUNT];
+Controller controllers[CONTROLLER_COUNT];
+byte current_project = 0;
 
 void setControllerProjectPath(byte project) {
     setFilePath("midibridge/%03d.io", project);
@@ -24,10 +25,10 @@ void loadControllerProject(byte project) {
         File file = SD.open(filePath);
         if (file) {
             while (file.available() && assignStorageValues(&file)) {
-                // patterns[patternPos].add(
-                //     (byte)storageValues[0], (byte)storageValues[1],
-                //     (byte)storageValues[2], (byte)storageValues[3],
-                //     i2b(storageValues[4]));
+                controllers[(byte)storageValues[0]].set((byte)storageValues[1],
+                                                        (byte)storageValues[2]);
+                // Serial.printf("cc %d %d %d\n", (int)storageValues[0],
+                //               (int)storageValues[1], (int)storageValues[2]);
             }
             file.close();
             return;
@@ -37,7 +38,7 @@ void loadControllerProject(byte project) {
 }
 
 bool saveControllerProject(byte project) {
-    Serial.println("load controller project.");
+    Serial.println("save controller project.");
     if (sdAvailable) {
         setControllerProjectPath(project);
         // SD.remove(patternPath);
@@ -46,22 +47,19 @@ bool saveControllerProject(byte project) {
         if (file) {
             file.seek(0);
             for (byte pos = 0; pos < CONTROLLER_COUNT; pos++) {
-                // Step* step = &patterns[patternPos].steps[pos];
-                // sprintf(storageBuffer, "%d %d %d %d %d\n", (int)pos,
-                //         (int)step->note, (int)step->duration,
-                //         (int)step->velocity, b2i(step->tie));
-                // file.print(storageBuffer);
+                Controller* c = &controllers[pos];
+                sprintf(storageBuffer, "%d %d %d\n", (int)pos, (int)c->control,
+                        (int)c->channel);
+                file.print(storageBuffer);
             }
             file.close();
             return true;
         }
     }
-    Serial.println("Failed to open file for writing");
+    Serial.printf("Failed to open file for writing %s\n", filePath);
     return false;
 }
 
-void controllerStorageInit() {
-    loadControllerProject(0);
-}
+void controllerStorageInit() { loadControllerProject(current_project); }
 
 #endif

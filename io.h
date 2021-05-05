@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 
+#include "io_controller_storage.h"
 #include "io_display.h"
 #include "io_midi.h"
 #include "io_storage.h"
@@ -15,6 +16,7 @@ void ioInit() {
     Serial.println("Init controller");
     displayInit();
     storageInit();
+    controllerStorageInit();
 
     midiInit();
     displayUpdate();
