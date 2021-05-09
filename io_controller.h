@@ -12,23 +12,29 @@ enum { VIEW_MAIN, VIEW_EDIT_CONTROLLER, VIEW_EDIT_CHANNEL, VIEW_COUNT };
 
 byte current_pattern = 0;
 byte current_view = VIEW_MAIN;
-byte current_channel = 1;
+byte current_channel = 0;
 byte last_control = 0;
 byte note_off_channel[128];
 
-void setCurrentChannel(byte value) { current_channel = (int)(value / 8) + 1; }
+void setCurrentChannel(byte value) { current_channel = (int)(value / (127.0 / 16.0)); }
 
-void controllerNoteOn(byte note, byte velocity) {
-    note_off_channel[note] = current_channel;
-    midiSerialNoteOn(note, velocity, current_channel);
+void controllerNoteOn(byte note, byte velocity, byte channel) {
+    if (current_channel) {
+        channel = current_channel;
+    }
+    note_off_channel[note] = channel;
+    midiSerialNoteOn(note, velocity, channel);
 }
 
 void controllerNoteOff(byte note, byte velocity) {
     midiSerialNoteOff(note, velocity, note_off_channel[note]);
 }
 
-void controllerCC(byte control, byte value) {
+void controllerCC(byte control, byte value, byte channel) {
     last_control = control;
+    if (controllers[control].channel) {
+        channel = controllers[control].channel;
+    }
     if (current_view == VIEW_EDIT_CONTROLLER) {
         controllers[control].setControl(value);
         saveControllerProject(current_project);
@@ -38,15 +44,11 @@ void controllerCC(byte control, byte value) {
     } else if (controllers[control].control == CTRL_SEL_CHANNEL) {
         setCurrentChannel(value);
     } else if (controllers[control].control == CTRL_SEL_PATTERN) {
-        midiSerialProgramChange(value, controllers[control].channel);
+        midiSerialProgramChange(value, channel);
         current_pattern = value;
     } else {
         controllers[control].value = value;
-        midiSerialCC(controllers[control].control, value,
-                     controllers[control].channel);
-        // Serial.printf("cc %d %d %d\n", (int)control,
-        //               (int)controllers[control].control,
-        //               (int)controllers[control].channel);
+        midiSerialCC(controllers[control].control, value, channel);
     }
 }
 
@@ -55,6 +57,7 @@ void controllerProgramChange(byte program) {
         current_view = mod(current_view + 1, VIEW_COUNT);
     } else if (program == 6) {
         current_pattern++;
+        // channel 1
         midiSerialProgramChange(current_pattern, 1);
     } else if (program < CONTROLLER_PROJECT_COUNT) {
         current_project = program;

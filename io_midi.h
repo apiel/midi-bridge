@@ -17,7 +17,7 @@ void noteOnHandler(byte channel, byte note, byte velocity) {
     Serial.print(", velocity=");
     Serial.println(velocity, DEC);
 
-    controllerNoteOn(note, velocity);
+    controllerNoteOn(note, velocity, channel);
     displayUpdate();
 }
 
@@ -48,7 +48,7 @@ void controlChangeHandler(byte channel, byte control, byte value) {
     Serial.print(", value=");
     Serial.println(value, DEC);
 
-    controllerCC(control, value);
+    controllerCC(control, value, channel);
     displayUpdate();
 }
 
